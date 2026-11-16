@@ -136,7 +136,7 @@
     };
     const dayLabel = (i) => {
       const p = P(toWall(i));
-      return `${CFG.daysShort[p.dow]} ${p.d} ${CFG.monthsShort[p.m]}`;
+      return `${CFG.daysShort[p.dow]} ${p.d} ${CFG.monthsShort[p.m] ${p.y}}`;
     };
     const dayStart = (dayW) => toInstant(dayW); // UK midnight always exists
     const dayEnd = (dayW) => toInstant(dayW + DAY);
