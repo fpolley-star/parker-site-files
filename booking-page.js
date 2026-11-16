@@ -141,7 +141,7 @@
     const dayStart = (dayW) => toInstant(dayW); // UK midnight always exists
     const dayEnd = (dayW) => toInstant(dayW + DAY);
 
-    const VERSION = '2026-11-16a';
+    const VERSION = '2026-11-16b';
     window.dtpVersion = VERSION;
     function init() {
       const root = document.querySelector('[data-dtp]');
@@ -865,8 +865,8 @@
           if (CFG.debug && btn) console.log('[dtp] arrow', btn.getAttribute('data-dtp-step'), { asap: S.asap, leg: S.leg, out: S.out && isoWall(S.out) });
           if (!btn || (e.button !== undefined && e.button !== 0)) return;
           e.preventDefault();
-          if (document.activeElement === hourIn) applyHour();
-          if (document.activeElement === minIn) applyMinute();
+          const typing = document.activeElement;
+          if (typing === hourIn || typing === minIn) typing.blur();
           stopHold();
           if (!stepFrom(btn)) return;
           holdT = setTimeout(() => {
