@@ -141,7 +141,7 @@
     const dayStart = (dayW) => toInstant(dayW); // UK midnight always exists
     const dayEnd = (dayW) => toInstant(dayW + DAY);
 
-    const VERSION = '2026-10-08c';
+    const VERSION = '2026-11-16a';
     window.dtpVersion = VERSION;
     function init() {
       const root = document.querySelector('[data-dtp]');
