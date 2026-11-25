@@ -1,4 +1,4 @@
- (function () {
+(function () {
     const CFG = {
       vars: {
         journeyType: 'booking_journey_type', 
@@ -41,6 +41,7 @@
         errGap: 'Clocks go forward then',
         errHour: 'Hours 0–23',
         errMinute: 'Minutes 00–59',
+        timeAsap: 'ASAP',
       },
       // combo classes the code adds/removes — design each one in Webflow
       cls: {
@@ -138,10 +139,15 @@
       const p = P(toWall(i));
       return `${CFG.daysShort[p.dow]} ${p.d} ${CFG.monthsShort[p.m]} ${p.y}`;
     };
+    const ord = (d) => d + (d % 10 === 1 && d !== 11 ? 'st' : d % 10 === 2 && d !== 12 ? 'nd' : d % 10 === 3 && d !== 13 ? 'rd' : 'th');
+    const dateLabel = (i) => {
+      const p = P(toWall(i));
+      return `${ord(p.d)} ${CFG.monthsShort[p.m]} ${p.y}`;
+    };
     const dayStart = (dayW) => toInstant(dayW); // UK midnight always exists
     const dayEnd = (dayW) => toInstant(dayW + DAY);
 
-    const VERSION = '2026-11-16b';
+    const VERSION = '2026-11-25a';
     window.dtpVersion = VERSION;
     function init() {
       const root = document.querySelector('[data-dtp]');
@@ -549,6 +555,15 @@
         return days === 1 ? 'Return the next day' : `Return ${days} days later`;
       }
 
+      // separate date / time text anywhere on the page: data-dtp-text="out-date|out-time|ret-date|ret-time"
+      function setPart(key, text) {
+        document.querySelectorAll(`[data-dtp-text="${key}"]`).forEach((el) => {
+          if (el.dataset.placeholder === undefined) el.dataset.placeholder = el.textContent.trim();
+          el.textContent = text || el.dataset.placeholder;
+          mark(el, C.empty, !text);
+        });
+      }
+
       function render(scroll) {
         const open = !pop.hidden;
         field.ret.hidden = !isReturn();
@@ -562,6 +577,10 @@
         });
         setField(field.out, S.asap ? CFG.text.asap : S.out !== null ? describe(S.out) : '');
         setField(field.ret, S.ret !== null ? describe(S.ret) : '');
+        setPart('out-date', S.asap ? dateLabel(Date.now()) : S.out !== null ? dateLabel(S.out) : '');
+        setPart('out-time', S.asap ? CFG.text.timeAsap : S.out !== null ? hm(S.out) : '');
+        setPart('ret-date', isReturn() && S.ret !== null ? dateLabel(S.ret) : '');
+        setPart('ret-time', isReturn() && S.ret !== null ? hm(S.ret) : '');
         mark(field.out, C.active, open && S.leg === 'out');
         mark(field.ret, C.active, open && S.leg === 'ret');
         field.out.setAttribute('aria-expanded', String(open && S.leg === 'out'));
